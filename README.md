@@ -1,16 +1,18 @@
 ```markdown
-# Contribution [#]: [Issue Title]
+# Contribution [1]: [Arabic text displays LTR instead of RTL]
 
-**Contribution Number:** [1 / 2 / 3]  
+**Contribution Number:** [1]  
 **Student:** Delight Nyanhete  
-**Issue:** [GitHub issue link]  
+**Issue:** [[GitHub issue link](https://github.com/stoatchat/for-web/issues/964)]  
 **Status:** [Phase I Complete]
 
 ---
 
 ## Why I Chose This Issue
 
-[1-2 paragraphs explaining why this issue interests you, how it matches your skills/learning goals, what you hope to learn]
+This issue addresses a bug where Arabic text is being displayed left-to-right instead of right-to-left, breaking the reading experience for Arabic-speaking users. Text directionality is a fundamental part of internationalization. Getting it wrong makes the interface effectively unusable for that audience.
+
+This is my very first open source contribution, and rather than let that be a reason to back out, I chose an issue that plays to my existing JavaScript and TypeScript experience while keeping the scope manageable. My real goal here isn't just the fix. I want to learn how to navigate an unfamiliar codebase, understand contribution workflows, and build the confidence to take on bigger issues next time.
 
 ---
 
@@ -18,15 +20,15 @@
 
 ### Problem Description
 
-[In your own words, what's broken or missing?]
+According to the screenshots and help request, Arabic text in the application is being rendered left-to-right instead of right-to-left. Arabic is a RTL language, meaning the text direction and layout need to flow from right to left. Without this, the text appears in the wrong order and the interface becomes difficult or impossible to read for Arabic speakers. The issue also affects the settings page and some strings appear untranslated
 
 ### Expected Behavior
 
-[What should happen?]
+Arabic text should render right-to-left across all parts of the interface, including the settings page. The layout and text alignment should respect RTL direction so the app is readable and usable for Arabic-speaking users.
 
 ### Current Behavior
 
-[What actually happens?]
+Arabic text is displayed left-to-right, which reverses the natural reading direction. The settings page is also affected, and some UI strings are either missing translations or showing in the wrong language entirely
 
 ### Affected Components
 
