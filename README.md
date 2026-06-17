@@ -30,60 +30,52 @@ Arabic text should render right-to-left across all parts of the interface, inclu
 
 Arabic text is displayed left-to-right, which reverses the natural reading direction. The settings page is also affected, and some UI strings are either missing translations or showing in the wrong language entirely
 
-### Affected Components
-
-[Which parts of the codebase are involved?]
-
----
-
-## Reproduction Process
+### Reproduction Process
 
 ### Environment Setup
-
-[Notes on setting up your local development environment - challenges you faced, how you solved them]
+Used mise + recursive clone in WSL2 Ubuntu (had to install WSL2 first since I'm
+on Windows). Needed to add `local.revolt.chat` to the Windows hosts file for
+the dev server to work correctly with cookies/CORS.
 
 ### Steps to Reproduce
-
-1. [Step 1]
-2. [Step 2]
-3. [Observed result]
+1. Run `mise dev`, open http://local.revolt.chat:5173, log in
+2. Go to Settings → Language → select "عربي" (Arabic)
+3. **Expected:** entire UI mirrors right-to-left, including the Settings panel
+4. **Actual:** strings translate to Arabic but layout stays left-to-right everywhere
 
 ### Reproduction Evidence
-
-- **Commit showing reproduction:** [Link to commit in your fork]
-- **Screenshots/logs:** [If applicable]
-- **My findings:** [What you discovered during reproduction]
-
----
+- **Branch:** https://github.com/Delight-bot/for-web/tree/fix-issue-964
+- **My findings:** Traced the bug to the codebase — `Languages.ts` already
+  defines `rtl: true` for Arabic and the `Locale` store validates an
+  `options.rtl` flag, but nothing in the app ever reads it. `loadAndSwitchLocale()`
+  in `i18n/index.tsx` only swaps translation strings, never sets
+  `document.documentElement.dir`. There's even a `ConfigureRTL()` component
+  in `Language.tsx` for this — fully commented out and never wired up.
 
 ## Solution Approach
 
-### Analysis
-
-[Your analysis of the root cause - what's causing the issue?]
-
-### Proposed Solution
-
-[High-level description of your fix approach]
-
 ### Implementation Plan
+**Understand:** Language switching swaps translated strings but never updates
+document direction, despite the data model already having an `rtl` flag.
 
-Using UMPIRE framework (adapted):
+**Match:** `LoadTheme.tsx` (packages/client/components/ui/themes/LoadTheme.tsx)
+shows the right pattern — a `createEffect` that reactively pushes global
+state onto the document root.
 
-**Understand:** [Restate the problem]
+**Plan:**
+1. Add a `LoadDirection`-style component mirroring `LoadTheme.tsx` that sets
+   `document.documentElement.dir` from `Languages[lang].localeOptions?.rtl`
+2. Add `setRtl()` to the `Locale` store for manual override
+3. Uncomment and wire up `ConfigureRTL()` in `Language.tsx`
+4. Add missing `rtl: true` to `fa`, `ur`, `ckb` in `Languages.ts`
+5. Spot-check sidebar/settings/message list under `dir="rtl"` for hardcoded
+   left/right CSS
 
-**Match:** [What similar patterns/solutions exist in the codebase?]
+**Review:** Will follow GUIDELINES.md (comment above all Solid components,
+no destructuring reactive props, 2-space indent) before opening PR.
 
-**Plan:** [Step-by-step implementation plan]
-1. [Modify file X to do Y]
-2. [Add function Z]
-3. [Update tests]
-
-**Implement:** [Link to your branch/commits as you work]
-
-**Review:** [Self-review checklist - does it follow the project's contribution guidelines?]
-
-**Evaluate:** [How will you verify it works?]
+**Evaluate:** Manually confirm Arabic flips direction app-wide including
+Settings; confirm other languages still render LTR; run `mise check`.
 
 ---
 
